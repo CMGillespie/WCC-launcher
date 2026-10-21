@@ -133,7 +133,8 @@ def write_extension_config(ext_dir: Path, rooms, backup_dir: Path):
         except Exception:
             cfg = {}
         (backup_dir / "config.json.previous").write_text(raw, encoding="utf-8")
-    cfg.setdefault("presets", ["en", "es-MX", "fr", "fr-CA", "de", "ja"])
+    # No language presets — the Wordly session is the source of truth for languages.
+    cfg.pop("presets", None)
     cfg["sessionId"] = ""
     cfg["passcode"]  = ""
     cfg["rooms"] = [{
@@ -231,6 +232,11 @@ def main():
                     help="Create N blank room profiles and nothing else. Run this "
                          "once on a machine, install the extension in each, and "
                          "every future event then needs no setup at all.")
+    ap.add_argument("--rooms-only", action="store_true",
+                    help="Only refresh the room list inside the extension from the "
+                         "CSV. Touches nothing else — no profiles, launchers or "
+                         "cards. Use this when the machine is already set up and "
+                         "you just need this week's sessions loaded.")
     ap.add_argument("--ac-url", default="", help="Adobe Connect link (same for all rooms)")
     ap.add_argument("--ext", default="~/Documents/Code/wordly-chrome-capture",
                     help="Path to the Wordly Capture extension folder")
@@ -248,6 +254,19 @@ def main():
     ext_dir = Path(a.ext).expanduser().resolve()
     if not (ext_dir / "manifest.json").exists():
         sys.exit(f"ERROR: no manifest.json in extension folder: {ext_dir}\nUse --ext to point at the right folder.")
+
+    # --rooms-only: just swap this week's sessions into the extension and stop.
+    # Nothing else is touched, so an already-configured machine stays as it is.
+    if a.rooms_only:
+        if not a.csv:
+            sys.exit("ERROR: --rooms-only needs a CSV.")
+        rooms = read_rooms(Path(a.csv).expanduser())
+        write_extension_config(ext_dir, rooms, Path(a.out).expanduser())
+        print(f"Room list updated in {ext_dir / 'config.json'}\n")
+        for i, r in enumerate(rooms, start=1):
+            print(f"  Room-{i:02d}  ->  {r['label']:<22} {r['session']}")
+        print("\nOpen each room and pick it from the Room list in the extension.")
+        return
 
     out_dir = Path(a.out).expanduser()
     # Everything that isn't a launcher lives in one folder, so the top level is

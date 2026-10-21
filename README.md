@@ -71,6 +71,22 @@ You get `~/Documents/WordlyRooms` containing:
 
 ---
 
+## Already set up? Just swap in this week's sessions
+
+If the machine already has its profiles and the extension installed, you don't
+need to rebuild anything — just load the new room list:
+
+```
+python3 event-setup.py ~/Downloads/"this week.csv" --rooms-only
+```
+
+That rewrites only the room list inside the extension. No profiles, launchers or
+cards are touched. Open each room, pick it from the Room dropdown, go.
+
+Good fit for recurring work — a different event each week on the same machine.
+
+---
+
 ## On the day
 
 1. Double-click **START EVENT**
