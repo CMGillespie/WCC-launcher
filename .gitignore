@@ -1,0 +1,10 @@
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Event data — real customer CSVs stay out of git
+*.csv
+!rooms.example.csv

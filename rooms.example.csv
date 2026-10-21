@@ -1,0 +1,4 @@
+label,sessionId,passcode,acName
+Main Room,ABCD-1234,123456,Main
+Breakout 1,EFGH-5678,123456,Wordly Room 1
+Breakout 2,IJKL-9012,123456,Wordly Room 2
